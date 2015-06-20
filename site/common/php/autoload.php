@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('_APP_STARTED')) {
+if (!defined('MAIN_BODY')) {
 	die('Hacking attempt');
 }
 
@@ -13,34 +13,27 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 function __autoload($classname)
 {
-    static $_except_replacement = array('PgSql' => 'pgsql');
-
-    if ( (!defined('_PHP_CLASS_PATH')) || (!defined('_PHP_MODULE_PATH')) || (!preg_match('/^[a-zA-Z]+$/', $classname)) ) {
+    if (!preg_match('/^[a-zA-Z]+$/', $classname)) {
         return false;
     }
 
-    preg_match_all('/([A-Z]+[a-z]+)/', $classname, $_matches);
+    preg_match_all('/([A-Z]+[a-z]+)/', $classname, $matches);
 
-    if (strpos($classname, 'Module')) {
-        $_module = strtolower(implode('.', array_reverse($_matches[1])) . '.php');
-        
-        if (include_once(_PHP_MODULE_PATH . $_module)) {
-            return true;
-        }
-                
-        throw new Exception("Unable to load $_module.");
+    $path = '';
+    if (strpos($classname, 'Http') === 0) {
+        $path = 'http';
+    } else if (strpos($classname, 'Command') !== FALSE) {
+        $path = 'commands';
+    } else {
+        $path = 'classes';
     }
 
- 
-    $_exception_class = $_except_replacement[$classname];
+    $class = $path . '/' . $classname . ".class.php";
+    if (include_once($class)) {
+        return true;
+    }
 
-    $_class = 'class.' . ( strlen($_exception_class) ? $_exception_class : strtolower(implode('_', $_matches[1])) ) . '.php';
-
-    if (include_once(_PHP_CLASS_PATH . $_class)) {
-	    return true;
-    } 
-
-    throw new Exception("Unable to load $_class.");
+    return false;
 }
 
 spl_autoload_register('__autoload');
