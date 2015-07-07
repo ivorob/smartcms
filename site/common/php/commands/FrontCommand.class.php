@@ -12,5 +12,11 @@ abstract class FrontCommand {
     protected function getRequest() {
         return $this->request;
     }
+
+    public function handleCommand($context, $response) {
+        $content = $this->execute();
+        $response->addXmlContent($content);
+        return $response->makeContent();
+    }
 };
 

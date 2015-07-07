@@ -8,13 +8,19 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')) {
     header('X-UA-Compatible', '"IE=Edge, chrome=1" env=ie');
 }
 
+ob_start();
+
 //definitions
 define('MAIN_BODY',         1); //start from index.php*/
 
 include_once '../config/config.php';
 include_once '../common/php/autoload.php';
 
-$httpRequest = new HttpRequest($_SERVER['QUERY_STRING']);
-//$httpResponse = new HttpResponse;
-$controller = new FrontController;
-$controller->doRequest($httpRequest);
+try {
+    $controller = new FrontController;
+    echo $controller->doRequest(new ServerContext,
+        new HttpRequest($_SERVER['QUERY_STRING']),
+        new HttpResponse);
+} catch (Exception $e) {
+    echo "<pre>" . $e . "</pre>";
+}

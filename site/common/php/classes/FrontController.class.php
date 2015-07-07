@@ -1,9 +1,11 @@
 <?php
 
 class FrontController {
-    public function doRequest($request) {
+    public function doRequest($context, $request, $response) {
+        $response->addXmlContent($context->options());
+
         $command = $this->getCommand($request);
-        $command->execute();
+        return $command->handleCommand($context, $response);
     }
 
     private function getCommand($request) {
