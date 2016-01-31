@@ -1,13 +1,8 @@
 <?php
 
 class MainCommand extends FrontCommand {
-    public function execute() {
-        $xml = new SimpleXMLElement('<content />');
-        $xml->addChild('title', 'Test page');
-        $xml->addChild('body', 'Some text on site');
-
-        $domXml = new DOMDocument();
-        $domXml->loadXML($xml->asXML());
-        return $domXml->saveHTML();
+    public function execute(&$response) {
+        $response->setTitle('Test page');
+        return 'Some text on site';
     }
 };
