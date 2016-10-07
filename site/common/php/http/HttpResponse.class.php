@@ -17,10 +17,11 @@ class HttpResponse {
         $xml = new SimpleXMLElement('<content />');
         $xml->addChild('title', $this->title);
         $xml->addChild('body', 'Some text'); 
-        $this->addXmlContent($xml->asXML());
+
+        $dom = dom_import_simplexml($xml);
+        $this->addXmlContent($dom->ownerDocument->saveXML($dom->ownerDocument->documentElement));
 
         $this->content = '<?xml version="1.0" ?><root>' . $this->content . '</root>';
-        error_log($this->content);
         $xsltTransformer = new XsltTransformer('../common/templates/default/index.xslt', $this->content);
         return $xsltTransformer->process();
     }
