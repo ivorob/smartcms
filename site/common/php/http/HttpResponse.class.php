@@ -1,8 +1,9 @@
 <?php
 
 class HttpResponse {
-    private $content;
-    private $title;
+    private $content    = '';
+    private $title      = '';
+    private $body       = '';
 
     public function addTransformation($xslt, $xmlData) {
         $xsltTransformer = new XsltTransofrmer($xslt, $xmlData);
@@ -13,13 +14,16 @@ class HttpResponse {
         $this->content .= $xmlData;
     }
 
-    public function makeContent() {
-        $xml = new SimpleXMLElement('<content />');
-        $xml->addChild('title', $this->title);
-        $xml->addChild('body', 'Some text'); 
+    public function addBody($xmlData) {
+        $this->body .=  $xmlData;
+    }
 
-        $dom = dom_import_simplexml($xml);
-        $this->addXmlContent($dom->ownerDocument->saveXML($dom->ownerDocument->documentElement));
+    public function makeContent() {
+        $xml_content = "<content>";
+        $xml_content .= "<title>" . htmlspecialchars($this->title) . "</title>";
+        $xml_content .= "<body>" . $this->body . "</body>";
+        $xml_content .= "</content>";
+        $this->addXmlContent($xml_content);
 
         $this->content = '<?xml version="1.0" ?><root>' . $this->content . '</root>';
         $xsltTransformer = new XsltTransformer('../common/templates/default/index.xslt', $this->content);

@@ -14,8 +14,8 @@ abstract class FrontCommand {
     }
 
     public function handleCommand($context, &$response) {
-        $content = $this->execute($response);
-        $response->addXmlContent($content);
+        $body = $this->execute($response);
+        $response->addBody($body);
         return $response->makeContent();
     }
 };
